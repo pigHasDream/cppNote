@@ -57,5 +57,25 @@ int main() {
   cout << "count q1.use_count: " << q1.use_count() << endl;
   cout << "count q2.use_count: " << q2.use_count() << endl;
 
+
+  shared_ptr<Dog> p1 = make_shared<Dog>("Gunner"); // using default deleter: operator delete when out of scope.
+  shared_ptr<Dog> p2 = make_shared<Dog>("Tank");
+
+  p1 = p2; // Gunner is deleted
+  p1 = nullptr; // Gunner is deleted
+  p1.reset(); // Gunner is deleted
+
+
+  // !!!!!!!!!
+  // if we need to use a customized deleter, need to use below to construct
+  // it'll call the customized destructor!
+  // This is very useful with delete []
+  shared_ptr<Dog> p3 = shared_ptr<Dog>(new Dog("Tank"), 
+                                       [](Dog* p) { cout << "Custom deleting." << endl; delete p; }
+      );
+
+  // once we have created shared_ptr, it should be very careful to use the raw pointer otherwise it 
+  // may cause double deletion!
+
   return 0;
 }
